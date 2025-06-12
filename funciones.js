@@ -4,7 +4,8 @@ const prompt = require('prompt-sync');
 const { DateTime } = require('luxon');
 
 class Planta{
-    constructor(nombre, tipo, frecuenciaRiego, ultimoRiego){
+    constructor(id, nombre, tipo, frecuenciaRiego, ultimoRiego){
+        this.id = id
         this.nombre = nombre
         this.tipo = tipo
         this.frecuenciaRiego = frecuenciaRiego
@@ -15,6 +16,8 @@ class Planta{
 class Jardin{
     constructor(){
         this.plantas = []
+        this.numID = 0
+        this.necesitanRiego = []
     }
 
     async leerdatos() {
@@ -36,6 +39,16 @@ class Jardin{
         }
     }
 
+    async crearLog(mensaje){
+        let momento = DateTime.now().toISO()
+        let log = `[${momento}] ${mensaje}\n`
+        await fs.appendFile('logs.txt', log)
+    }
+
+    async contarIds(){
+        this.numID = this.plantas.length
+    }
+
     async cargarPlantas(metodo){
         switch(metodo){
             case 'manual': {
@@ -44,7 +57,11 @@ class Jardin{
                 let frecuenciaRiego = prompt('Frecuencia de riego (dias): ')
                 let ultimoRiego = false
 
-                this.plantas.push(new Planta(nombre, tipo, frecuenciaRiego, ultimoRiego))
+                this.plantas.push(new Planta(this.numID, nombre, tipo, frecuenciaRiego, ultimoRiego))
+                this.crearLog(`Planta cargada con el ID(${this.numID})`)
+                this.numID++
+
+                break;
             }
 
             case 'json': {
@@ -61,8 +78,12 @@ class Jardin{
                 }
 
                 for(let i = 0; i < nuevasPlantas.length; i++){
-                    this.plantas.push(new Planta(nuevasPlantas[i].nombre, nuevasPlantas[i].tipo, nuevasPlantas[i].frecuenciaRiego, nuevasPlantas[i].ultimoRiego))
+                    this.plantas.push(new Planta(this.numID, nuevasPlantas[i].nombre, nuevasPlantas[i].tipo, nuevasPlantas[i].frecuenciaRiego, nuevasPlantas[i].ultimoRiego))
+                    this.crearLog(`Planta cargada con el ID(${this.numID})`)
+                    this.numID++
                 }
+
+                break;
             }
 
             case 'xlsx': {
@@ -77,15 +98,76 @@ class Jardin{
                         datosXLSX[i].ultimoRiego = false
                     }
 
-                    this.plantas.push(new Planta(datosXLSX[i].nombre, nuevasPlantas[i].tipo, nuevasPlantas[i].frecuenciaRiego, nuevasPlantas[i].ultimoRiego))
+                    this.plantas.push(new Planta(this.numID, datosXLSX[i].nombre, datosXLSX[i].tipo, datosXLSX[i].frecuenciaRiego, datosXLSX[i].ultimoRiego))
+                    this.crearLog(`Planta cargada con el ID(${this.numID})`)
+                    this.numID++
                 }
+
+                break;
+            }
+
+            default: {
+                console.error("Error: Opción no válida, intentalo de nuevo.");
             }
         }
     }
 
     async revisarRiego(){
         let hoy = DateTime.now()
-        console.log(hoy)
+        this.necesitanRiego = []
+
+        for (let i = 0; i < this.plantas.length; i++){
+            let ultRiego = this.plantas[i].ultimoRiego
+
+            if (!ultRiego){
+                this.necesitanRiego.push(this.plantas[i])
+            }
+
+            else{
+                let ultRiegoSumado = DateTime.fromISO(this.plantas[i].ultimoRiego).plus({ days: this.plantas[i].frecuenciaRiego })
+
+                if (hoy >= ultRiegoSumado) {
+                    this.necesitanRiego.push(this.plantas[i])
+                }
+            }
+        }
+    }
+
+    async cualesNecesitanRiego(){
+        for(let i = 0; i < this.necesitanRiego.length; i++) {
+            console.log(`- La planta ${this.necesitanRiego[i].nombre} con id (${this.necesitanRiego[i].id}) necesita ser regada.`)
+        }
+
+        this.necesitanRiego = []
+    }
+
+    async regarPlantas(){
+        await this.revisarRiego()
+
+        let hoy = DateTime.now().toISODate();
+        
+        for(let i = 0; i < this.necesitanRiego.length; i++) {
+            this.necesitanRiego[i].ultimoRiego = hoy
+            this.crearLog(`Planta regada con el ID(${this.necesitanRiego[i].id})`)
+        }
+
+        let pause1 = prompt("Regando plantas..")
+        pause1 = prompt("Regando plantas....")
+        pause1 = prompt("Regando plantas........")
+        console.log("¡Plantas regadas correctamente!")
+
+        this.necesitanRiego = []
+    }
+
+    async verLogs(){
+        try {
+            const data = await fs.FileSync('logs.txt', 'utf8');
+            console.log(data);
+        } 
+        
+        catch (err) {
+            console.error("Error al leer el archivo");
+        }
     }
 
 }

@@ -32,7 +32,7 @@ async function menu () {
         console.log("\x1b[36m║ \x1b[33m 1)\x1b[0m Cargar plantas             \x1b[36m    ║\x1b[0m");
         console.log("\x1b[36m║ \x1b[33m 2)\x1b[0m Revisar riego                 \x1b[36m ║\x1b[0m");
         console.log("\x1b[36m║ \x1b[33m 3)\x1b[0m Regar plantas que necesiten   \x1b[36m ║\x1b[0m");
-        console.log("\x1b[36m║ \x1b[33m 4)\x1b[0m Crear logs     \x1b[36m                ║\x1b[0m");
+        console.log("\x1b[36m║ \x1b[33m 4)\x1b[0m Mostrar logs     \x1b[36m              ║\x1b[0m");
         console.log("\x1b[36m║ \x1b[33m 5)\x1b[0m Salir                        \x1b[36m  ║\x1b[0m");
         console.log("\x1b[36m╚════════════════════════════════════╝\x1b[0m");
 
@@ -47,6 +47,8 @@ async function menu () {
                 console.log("=== Cargar plantas ===") 
 
                 await gestor.leerdatos()
+                
+                await gestor.contarIds()
 
                 let metodo = await preguntar("Metodo con el que cargar las plantas (manual, json, xlsx): ")
 
@@ -65,8 +67,7 @@ async function menu () {
                 await gestor.leerdatos()
 
                 await gestor.revisarRiego()
-
-                await gestor.escribirdatos()
+                await gestor.cualesNecesitanRiego()
 
                 pause = await preguntar("Pulse Enter para continuar...")
                 break;
@@ -78,9 +79,9 @@ async function menu () {
                 
                 await gestor.leerdatos()
 
-                let campo = await preguntar("¿Por qué campo deseas filtrar? (titulo, desarrollador, genero, anoLanzamiento, rating): ")
-                let valorCampo = await preguntar("Valor para filtrar: ")
-                await gestor.filtrarPor(campo, valorCampo)
+                gestor.regarPlantas()
+
+                await gestor.escribirdatos()
 
                 pause = await preguntar("Pulse Enter para continuar...")
                 break;
@@ -88,11 +89,9 @@ async function menu () {
 
             case 4: {
                 console.clear()
-                console.log("=== Crear logs ===") 
+                console.log("=== Mostrar logs ===") 
                 
-                await gestor.leerdatos()
-
-                await gestor.juegosRetro()
+                await gestor.verLogs()
 
                 pause = await preguntar("Pulse Enter para continuar...")
                 break;
