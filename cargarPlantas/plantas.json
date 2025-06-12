@@ -1,1 +1,32 @@
-[]
+[
+  {
+    "nombre": "Menta",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 2,
+    "ultimoRiego": "2025-06-10"
+  },
+  {
+    "nombre": "Orquídea",
+    "tipo": "Interior",
+    "frecuenciaRiego": 6,
+    "ultimoRiego": false
+  },
+  {
+    "nombre": "Tomatera",
+    "tipo": "Huerto",
+    "frecuenciaRiego": 1,
+    "ultimoRiego": "2025-06-11"
+  },
+  {
+    "nombre": "Bambú",
+    "tipo": "Interior",
+    "frecuenciaRiego": 4,
+    "ultimoRiego": "2025-06-09"
+  },
+  {
+    "nombre": "Romero",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 3,
+    "ultimoRiego": false
+  }
+]

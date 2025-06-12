@@ -1,7 +1,7 @@
-const fs = require('fs/promises');
-const XLSX = require('xlsx');
-const prompt = require('prompt-sync');
-const { DateTime } = require('luxon');
+const fs = require('fs/promises')
+const XLSX = require('xlsx')
+const prompt = require('prompt-sync')()
+const { DateTime } = require('luxon')
 
 class Planta{
     constructor(id, nombre, tipo, frecuenciaRiego, ultimoRiego){
@@ -17,10 +17,10 @@ class Jardin{
     constructor(){
         this.plantas = []
         this.numID = 0
-        this.necesitanRiego = []
+        this.necesitanRiego = [] //Este es un array que se duplican los objetos de plantas que necesitan regado para luego editarlos aquí y que se editen en el array normal
     }
 
-    async leerdatos() {
+    async leerdatos() { //Aqui leemos los datos del array de jardin de manera asincrona
         try {
             const datos = await fs.readFile("jardin.json", 'utf8');
             this.plantas = JSON.parse(datos);
@@ -30,7 +30,7 @@ class Jardin{
         }
     }
 
-    async escribirdatos() {
+    async escribirdatos() {//Aqui escribimos los datos del array de jardin de manera asincrona
         try {
             const datosparseados = JSON.stringify(this.plantas, null, 2);
             await fs.writeFile("jardin.json", datosparseados, 'utf8');
@@ -39,32 +39,34 @@ class Jardin{
         }
     }
 
-    async crearLog(mensaje){
-        let momento = DateTime.now().toISO()
+    async crearLog(mensaje){ //Esta es uan funcion que sirve para llamarla y poniendo de parametro el mensaje que quieras y se crea una linea en el txt de logs
+        let momento = DateTime.now().toISO() //Esto es la fecha y hora
         let log = `[${momento}] ${mensaje}\n`
         await fs.appendFile('logs.txt', log)
     }
 
     async contarIds(){
-        this.numID = this.plantas.length
+        this.numID = this.plantas.length //Esto lo uso para ponerle un identificador unico a cada planta, soy consciente de que si se pudieran eliminar plantas no funcionaría bien pero no es el caso
     }
 
-    async cargarPlantas(metodo){
+    async cargarPlantas(metodo){ //Esta funcion recibe de parametro la forma en que cargar las plantas y se hace un swich con ese parametro
         switch(metodo){
-            case 'manual': {
+            case 'manual': { //Preguntamos los atributos de la planta y creamos un objeto con ellos y pusheamos en el array
                 let nombre = prompt('Nombre: ')
                 let tipo = prompt('Tipo: ')
                 let frecuenciaRiego = prompt('Frecuencia de riego (dias): ')
-                let ultimoRiego = false
+                let ultimoRiego = prompt('Fecha de la ultima vez que ha sido regada (yyyy-mm-dd): ')
 
                 this.plantas.push(new Planta(this.numID, nombre, tipo, frecuenciaRiego, ultimoRiego))
-                this.crearLog(`Planta cargada con el ID(${this.numID})`)
+
+                console.log('Planta cargada con exito!')
+                this.crearLog(`Planta cargada con el ID (${this.numID})`)
                 this.numID++
 
                 break;
             }
 
-            case 'json': {
+            case 'json': { // En esta funcion leemos los datos del json de cargar plantas, los metemos en un array y hacemos un push creando objetos de planta
                 let nuevasPlantas = []
 
                 try {
@@ -79,14 +81,16 @@ class Jardin{
 
                 for(let i = 0; i < nuevasPlantas.length; i++){
                     this.plantas.push(new Planta(this.numID, nuevasPlantas[i].nombre, nuevasPlantas[i].tipo, nuevasPlantas[i].frecuenciaRiego, nuevasPlantas[i].ultimoRiego))
-                    this.crearLog(`Planta cargada con el ID(${this.numID})`)
+                    this.crearLog(`Planta cargada con el ID (${this.numID})`)
                     this.numID++
                 }
+
+                console.log('Plantas cargadas con exito!')
 
                 break;
             }
 
-            case 'xlsx': {
+            case 'xlsx': { //Aqui pues leemos el archivo excel y creamos los objetos de planta
                 const ruta = './cargarPlantas/plantas.xlsx'
                 const libro = XLSX.readFile(ruta)
                 const hoja = 'Hoja1'
@@ -99,9 +103,11 @@ class Jardin{
                     }
 
                     this.plantas.push(new Planta(this.numID, datosXLSX[i].nombre, datosXLSX[i].tipo, datosXLSX[i].frecuenciaRiego, datosXLSX[i].ultimoRiego))
-                    this.crearLog(`Planta cargada con el ID(${this.numID})`)
+                    this.crearLog(`Planta cargada con el ID (${this.numID})`)
                     this.numID++
                 }
+
+                console.log('Plantas cargadas con exito!')
 
                 break;
             }
@@ -112,21 +118,21 @@ class Jardin{
         }
     }
 
-    async revisarRiego(){
-        let hoy = DateTime.now()
-        this.necesitanRiego = []
+    async revisarRiego(){ //En esta funcion metemos en el array de necesitanRiego las plantas que lo necesiten
+        let hoy = DateTime.now() //Vemos la fecha de hoy para controlar el tiempo de regado
+        this.necesitanRiego = [] //Formateamos el array para que no haya problemas
 
         for (let i = 0; i < this.plantas.length; i++){
-            let ultRiego = this.plantas[i].ultimoRiego
+            let ultRiego = this.plantas[i].ultimoRiego //Sacamos el valor de ultimo riego de cada objeto del array
 
-            if (!ultRiego){
+            if (!ultRiego){ // Si es false directamente necesitan regado
                 this.necesitanRiego.push(this.plantas[i])
             }
 
             else{
-                let ultRiegoSumado = DateTime.fromISO(this.plantas[i].ultimoRiego).plus({ days: this.plantas[i].frecuenciaRiego })
+                let ultRiegoSumado = DateTime.fromISO(this.plantas[i].ultimoRiego).plus({ days: this.plantas[i].frecuenciaRiego }) //Aqui vemos que dia necesitarian regado sumandole al ultimo riego los dias necesarios. El fromISO sirve para formatearlas al formato iso para poder comprarlo y el plus es para añadir los dias
 
-                if (hoy >= ultRiegoSumado) {
+                if (hoy >= ultRiegoSumado) { //Vemos si el ultimo riego mas los dias que necesita es menor que hoy, si es asi necesitan ser regadas
                     this.necesitanRiego.push(this.plantas[i])
                 }
             }
@@ -134,21 +140,23 @@ class Jardin{
     }
 
     async cualesNecesitanRiego(){
-        for(let i = 0; i < this.necesitanRiego.length; i++) {
-            console.log(`- La planta ${this.necesitanRiego[i].nombre} con id (${this.necesitanRiego[i].id}) necesita ser regada.`)
+        await this.revisarRiego()////LLamamos a esta funcion para ver que plantas necesitan riego para que se añadan al array
+
+        for(let i = 0; i < this.necesitanRiego.length; i++) { // Aqui basicamente mostramos el array de necesitan riego
+            console.log(`- La planta ${this.necesitanRiego[i].nombre} con el ID (${this.necesitanRiego[i].id}) necesita ser regada.`)
         }
 
         this.necesitanRiego = []
     }
 
-    async regarPlantas(){
-        await this.revisarRiego()
+    async regarPlantas(){ // Aqui regamos las plantas que lo necesiten y ponemos su valor de ultimo regado a la fecha actual
+        await this.revisarRiego() //LLamamos a esta funcion para ver que plantas necesitan riego para que se añadan al array, además si actualizo los objetos del array de necesitanRiego tambien se actualiza en el array de plantas ya que es como un clon.
 
-        let hoy = DateTime.now().toISODate();
+        let hoy = DateTime.now().toISODate(); //Vemos la fecha de hoy
         
         for(let i = 0; i < this.necesitanRiego.length; i++) {
-            this.necesitanRiego[i].ultimoRiego = hoy
-            this.crearLog(`Planta regada con el ID(${this.necesitanRiego[i].id})`)
+            this.necesitanRiego[i].ultimoRiego = hoy // Aqui igualamos los que necesiten riego su ultimo regado a hoy
+            await this.crearLog(`Planta regada con el ID (${this.necesitanRiego[i].id})`) //Creamos el log de que lo regamos
         }
 
         let pause1 = prompt("Regando plantas..")
@@ -159,17 +167,17 @@ class Jardin{
         this.necesitanRiego = []
     }
 
-    async verLogs(){
+    async verLogs(){ //Esto es para mostrar toda la informacion dek txt logs
         try {
-            const data = await fs.FileSync('logs.txt', 'utf8');
-            console.log(data);
+            const data = await fs.readFile('logs.txt', 'utf8')
+            console.log(data)
         } 
         
         catch (err) {
-            console.error("Error al leer el archivo");
+            console.error("Error al leer el archivo")
         }
     }
 
 }
 
-module.exports = {Jardin}
+module.exports = {Jardin} // Exportamos la clase jardin que usa todo asi que no hay que exportar lo demás

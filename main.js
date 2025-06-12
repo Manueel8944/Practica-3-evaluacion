@@ -1,15 +1,15 @@
 const readline = require('readline');
 
-const { Jardin } = require('./funciones.js');
+const { Jardin } = require('./funciones.js'); //Exportamos la clase Jardin del otro archivo
 
 let pause
 
-const rl = readline.createInterface({
+const rl = readline.createInterface({ //Esta es la intefaz del readline para que funcione
   input: process.stdin,
   output: process.stdout,
 });
 
-function preguntar(texto) {
+function preguntar(texto) { //Creo una funcion para poder preguntar con una promesa mediante readline
   return new Promise((resolve) => {
     rl.question(texto, (respuesta) => {
       resolve(respuesta);
@@ -17,7 +17,7 @@ function preguntar(texto) {
   });
 }
 
-async function menu () {
+async function menu () { //En esta funcion instanciamos dentro la clase Jardin y creamos un menú con un switch
     
     const gestor = new Jardin()
 
@@ -36,7 +36,7 @@ async function menu () {
         console.log("\x1b[36m║ \x1b[33m 5)\x1b[0m Salir                        \x1b[36m  ║\x1b[0m");
         console.log("\x1b[36m╚════════════════════════════════════╝\x1b[0m");
 
-        menu = parseInt(await preguntar("Elige una opción: "))
+        menu = parseInt(await preguntar("Elige una opción: ")) //De esta forma se usa la funcion de preguntar que creamos anteriormente con await
 
         console.clear()
 
@@ -46,15 +46,15 @@ async function menu () {
                 console.clear()
                 console.log("=== Cargar plantas ===") 
 
-                await gestor.leerdatos()
+                await gestor.leerdatos() //Leemos los datos del json jardin
                 
                 await gestor.contarIds()
 
-                let metodo = await preguntar("Metodo con el que cargar las plantas (manual, json, xlsx): ")
+                let metodo = await preguntar("Metodo con el que cargar las plantas (manual, json, xlsx): ") //Preguntamos para usar de parametro de funcion
 
                 await gestor.cargarPlantas(metodo)
 
-                await gestor.escribirdatos()
+                await gestor.escribirdatos() //Escribimos los datos del json jardin
 
                 pause = await preguntar("Pulse Enter para continuar...")
                 break;
@@ -66,8 +66,7 @@ async function menu () {
 
                 await gestor.leerdatos()
 
-                await gestor.revisarRiego()
-                await gestor.cualesNecesitanRiego()
+                await gestor.cualesNecesitanRiego() // Se muestran las plantas que necesiten riego
 
                 pause = await preguntar("Pulse Enter para continuar...")
                 break;
@@ -79,7 +78,7 @@ async function menu () {
                 
                 await gestor.leerdatos()
 
-                gestor.regarPlantas()
+                await gestor.regarPlantas() //Regamos las plantas del array de necesitanPlantas, cabe recalcar que al editar en ese array se edita en el de plantas ya que es una especie de duplicado
 
                 await gestor.escribirdatos()
 
@@ -101,7 +100,7 @@ async function menu () {
                 console.clear()
                 console.log("=== Salir ===")
                 rl.close()
-                break;
+                return;
             }
 
             default: {

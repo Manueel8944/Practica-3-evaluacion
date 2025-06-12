@@ -1,1 +1,86 @@
-[]
+[
+  {
+    "id": 0,
+    "nombre": "Margarita",
+    "tipo": "Flor",
+    "frecuenciaRiego": "2",
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 1,
+    "nombre": "Menta",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 2,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 2,
+    "nombre": "Orquídea",
+    "tipo": "Interior",
+    "frecuenciaRiego": 6,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 3,
+    "nombre": "Tomatera",
+    "tipo": "Huerto",
+    "frecuenciaRiego": 1,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 4,
+    "nombre": "Bambú",
+    "tipo": "Interior",
+    "frecuenciaRiego": 4,
+    "ultimoRiego": "2025-06-09"
+  },
+  {
+    "id": 5,
+    "nombre": "Romero",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 3,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 6,
+    "nombre": "Romero",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 4,
+    "ultimoRiego": 45816
+  },
+  {
+    "id": 7,
+    "nombre": "Orquídea",
+    "tipo": "Interior",
+    "frecuenciaRiego": 6,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 8,
+    "nombre": "Tomatera",
+    "tipo": "Hortaliza",
+    "frecuenciaRiego": 2,
+    "ultimoRiego": 45815
+  },
+  {
+    "id": 9,
+    "nombre": "Menta",
+    "tipo": "Aromática",
+    "frecuenciaRiego": 3,
+    "ultimoRiego": 45819
+  },
+  {
+    "id": 10,
+    "nombre": "Bambú",
+    "tipo": "Decorativa",
+    "frecuenciaRiego": 5,
+    "ultimoRiego": "2025-06-12"
+  },
+  {
+    "id": 11,
+    "nombre": "Azuzena",
+    "tipo": "Flor",
+    "frecuenciaRiego": "4",
+    "ultimoRiego": "2025-06-01"
+  }
+]
