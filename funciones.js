@@ -60,7 +60,7 @@ class Jardin{
                 this.plantas.push(new Planta(this.numID, nombre, tipo, frecuenciaRiego, ultimoRiego))
 
                 console.log('Planta cargada con exito!')
-                this.crearLog(`Planta cargada con el ID (${this.numID})`)
+                this.crearLog(`Planta cargada con el ID (${this.numID}) manualmente`)
                 this.numID++
 
                 break;
@@ -81,7 +81,7 @@ class Jardin{
 
                 for(let i = 0; i < nuevasPlantas.length; i++){
                     this.plantas.push(new Planta(this.numID, nuevasPlantas[i].nombre, nuevasPlantas[i].tipo, nuevasPlantas[i].frecuenciaRiego, nuevasPlantas[i].ultimoRiego))
-                    this.crearLog(`Planta cargada con el ID (${this.numID})`)
+                    this.crearLog(`Planta cargada con el ID (${this.numID}) desde json`)
                     this.numID++
                 }
 
@@ -103,7 +103,7 @@ class Jardin{
                     }
 
                     this.plantas.push(new Planta(this.numID, datosXLSX[i].nombre, datosXLSX[i].tipo, datosXLSX[i].frecuenciaRiego, datosXLSX[i].ultimoRiego))
-                    this.crearLog(`Planta cargada con el ID (${this.numID})`)
+                    this.crearLog(`Planta cargada con el ID (${this.numID}) desde xlsx`)
                     this.numID++
                 }
 
